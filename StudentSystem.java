@@ -3,11 +3,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class StudentSystem {
-
-    private static final String URL = "jdbc:mysql://localhost:3306/student_system?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8";
-    private static final String USERNAME = "root";
-    private static final String PASSWORD = "123456";
-
     public static void main(String[] args) throws SQLException {
         Scanner sc = new Scanner(System.in,"GBK");
         ArrayList<Student> list = StudentDao.queryAllStudents();
@@ -54,8 +49,8 @@ public class StudentSystem {
         while(true){
             System.out.println("请输入学生学号");
             id = sc.next();
-            int index = getIndex(list, id);
-            if(index == -1){
+            int index = StudentService.getIndex(list, id);
+            if (!StudentService.isIdExists(list, id)){
                 break;
             }
             System.out.println("该学号已存在，请重新输入！");
@@ -68,8 +63,7 @@ public class StudentSystem {
         String address = sc.next();
 
         Student s = new Student(id, name, age, address);
-        StudentDao.addStudentToDB(s);
-        list.add(s);
+        StudentService.addStudent(list, s);
         System.out.println("学生信息添加成功！");
     }
 
@@ -86,27 +80,15 @@ public class StudentSystem {
         }
     }
 
-    public static int getIndex(ArrayList<Student> list, String id) {
-        for (int i = 0; i < list.size(); i++){
-            Student s = list.get(i);
-            if (s.getId().equals(id)){
-                return i;
-            }
-
-        }
-        return -1;
-    }
-
     public static void deleteStudent(ArrayList<Student> list) throws SQLException{
         Scanner sc = new Scanner(System.in,"GBK");
         System.out.print("请输入要删除的学生学号：");
         String id = sc.next();
-        int index = getIndex(list, id);
+        int index = StudentService.getIndex(list, id);
         if (index == -1){
             System.out.println("学号不存在，请重新输入！");
         } else {
-            StudentDao.deleteStudentFromDB(id);
-            list.remove(index);
+            StudentService.deleteStudent(list, id);
             System.out.println("学生信息删除成功！");
         }
     }
@@ -115,7 +97,7 @@ public class StudentSystem {
         Scanner sc = new Scanner(System.in,"GBK");
         System.out.print("请输入要修改的学生学号：");
         String id = sc.next();
-        int index = getIndex(list, id);
+        int index = StudentService.getIndex(list, id);
         if(index == -1){
             System.out.printf("学号为%s的学生不存在，请重新输入！%n", id);
             return;
@@ -131,10 +113,7 @@ public class StudentSystem {
             System.out.println("请输入新的学生家庭住址：");
             String address = sc.next();
 
-            s.setName(name);
-            s.setAge(age);
-            s.setAddress(address);
-            StudentDao.updateStudentToDB(s);
+            StudentService.updateStudent(s, name, age, address);
             System.out.println("学生信息修改成功！");
     } 
 }
