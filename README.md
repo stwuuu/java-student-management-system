@@ -30,9 +30,10 @@
 ## 项目结构
 
 ```text
-Student.java        学生实体类，封装 id、name、age、address
-StudentDao.java     数据访问层，负责连接 MySQL 并执行 SQL
-StudentSystem.java  控制台交互层，负责菜单、输入和流程控制
+Student.java         学生实体类，封装 id、name、age、address
+StudentDao.java      数据访问层，负责连接 MySQL 并执行 SQL
+StudentService.java  业务逻辑层，负责学号校验、添加、删除、修改等业务流程
+StudentSystem.java   控制台交互层，负责菜单、输入和输出提示
 ```
 
 ## 数据库设计
