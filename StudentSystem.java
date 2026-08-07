@@ -58,13 +58,18 @@ public class StudentSystem {
         System.out.print("请输入学生姓名：");
         String name = sc.next();
         System.out.print("请输入学生年龄：");
-        int age = sc.nextInt();
+        int age = inputAge(sc);
         System.out.print("请输入学生家庭住址：");
         String address = sc.next();
 
         Student s = new Student(id, name, age, address);
-        StudentService.addStudent(list, s);
-        System.out.println("学生信息添加成功！");
+        boolean success = StudentService.addStudent(list, s);
+
+        if (success) {
+            System.out.println("学生信息添加成功!");
+        } else {
+            System.out.println("学生信息添加失败!");
+        }
     }
 
     public static void queryStudent(ArrayList<Student> list){
@@ -88,8 +93,13 @@ public class StudentSystem {
         if (index == -1){
             System.out.println("学号不存在，请重新输入！");
         } else {
-            StudentService.deleteStudent(list, id);
-            System.out.println("学生信息删除成功！");
+            boolean success = StudentService.deleteStudent(list, id);
+            
+            if (success) {
+                System.out.println("学生信息删除成功！");
+            } else {
+                System.out.println("学生信息删除失败！");
+            }
         }
     }
 
@@ -108,12 +118,34 @@ public class StudentSystem {
             String name = sc.next();
 
             System.out.println("请输入新的学生年龄：");
-            int age = sc.nextInt();
+            int age = inputAge(sc);
 
             System.out.println("请输入新的学生家庭住址：");
             String address = sc.next();
 
-            StudentService.updateStudent(s, name, age, address);
-            System.out.println("学生信息修改成功！");
-    } 
+            boolean success = StudentService.updateStudent(s, name, age, address);
+            
+            if (success) {
+                System.out.println("学生信息修改成功！");
+            } else {
+                System.out.println("学生信息修改失败！");
+            }
+    }
+
+    public static int inputAge(Scanner sc){
+
+        while (true) {
+            if (sc.hasNextInt()) {
+                int age = sc.nextInt();
+                if (age >= 1 && age <= 120) {
+                    return age;
+                } else {
+                    System.out.println("年龄必须在1到120之间，请重新输入：");
+                }
+            } else{
+                sc.next();
+                System.out.print("年龄必须是整数，请重新输入：");
+            }
+        }
+    }
 }

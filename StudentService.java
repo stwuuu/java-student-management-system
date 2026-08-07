@@ -17,25 +17,42 @@ public class StudentService {
         return getIndex(list,id) != -1;
     }
 
-    public static void addStudent(ArrayList<Student> list, Student s) throws SQLException {
-        StudentDao.addStudentToDB(s);
-        list.add(s);
+    public static boolean addStudent(ArrayList<Student> list, Student s) throws SQLException {
+        boolean success = StudentDao.addStudentToDB(s);
+        
+        if (success) {
+            list.add(s);
+        }
+
+        return success;
+
     }
 
-    public static void deleteStudent(ArrayList<Student> list,String id) throws SQLException {
+    public static boolean deleteStudent(ArrayList<Student> list,String id) throws SQLException {
         int index = getIndex(list, id);
-        StudentDao.deleteStudentFromDB(id);
-        list.remove(index);
+
+        boolean success = StudentDao.deleteStudentFromDB(id);
+
+        if (success) {
+            list.remove(index);
+        }
+
+        return success;
+        
     }
 
-    public static void updateStudent(Student s, String name, int age, String address) throws SQLException {
+    public static boolean updateStudent(Student s, String name, int age, String address) throws SQLException {
         Student newStudent = new Student(s.getId(), name, age, address);
 
-        StudentDao.updateStudentToDB(newStudent);
+        boolean success = StudentDao.updateStudentToDB(newStudent);
 
-        s.setName(name);
-        s.setAge(age);
-        s.setAddress(address);
+        if (success) {
+            s.setName(name);
+            s.setAge(age);
+            s.setAddress(address);
+        }
+
+        return success;
         
     }
 

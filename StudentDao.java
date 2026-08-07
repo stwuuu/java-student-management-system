@@ -17,7 +17,7 @@ public class StudentDao {
     public static ArrayList<Student> queryAllStudents() throws SQLException {
         ArrayList<Student> list = new ArrayList<>();
 
-        String sql = "SELECT id, name, age, address FROM student";
+        String sql = "SELECT id, name, age, address FROM student ORDER BY id ASC";
 
         try (
                 Connection conn = getConnection();
@@ -38,7 +38,7 @@ public class StudentDao {
             return list;
     }
 
-    public static void addStudentToDB(Student s) throws SQLException {
+    public static boolean addStudentToDB(Student s) throws SQLException {
 
         String sql = "INSERT INTO student (id, name, age, address) VALUES (?, ?, ?, ?)";
 
@@ -52,31 +52,27 @@ public class StudentDao {
             pstmt.setString(4, s.getAddress());
 
             int count = pstmt.executeUpdate();
-            if (count > 0) {
-                System.out.println("学生信息添加到数据库成功！");
-            }
+            return count > 0;
         }
     }
 
-    public static void deleteStudentFromDB(String id) throws SQLException {
+    public static boolean deleteStudentFromDB(String id) throws SQLException {
 
         String sql = "DELETE FROM student WHERE id = ?";
 
 
         try (
-        Connection conn = getConnection();
-        PreparedStatement pstmt = conn.prepareStatement(sql)
+            Connection conn = getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
             pstmt.setString(1, id);
 
             int count = pstmt.executeUpdate();
-            if (count > 0) {
-                System.out.println("学生信息从数据库删除成功！");
-            }
+            return count > 0;
         }
     }
 
-    public static void updateStudentToDB(Student s) throws SQLException{
+    public static boolean updateStudentToDB(Student s) throws SQLException{
 
         String sql = "UPDATE student SET name = ?, age = ?, address = ? WHERE id = ?";
 
@@ -90,10 +86,9 @@ public class StudentDao {
             pstmt.setString(4, s.getId());
 
             int count = pstmt.executeUpdate();
-            if(count > 0) {
-                System.out.println("学生信息修改到数据库成功！");
-            }
+            return count > 0;
         }
     }
 }
+
 
