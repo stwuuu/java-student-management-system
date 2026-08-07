@@ -85,7 +85,7 @@ java -cp ".;lib\mysql-connector-j-9.7.0.jar" StudentSystem
 
 ## 项目收获
 
-通过本项目，练习了 Java 面向对象、集合、MySQL 基础 SQL、JDBC 数据库连接、PreparedStatement 防 SQL 注入、ResultSet 结果集处理，以及简单的 DAO 分层思想。
+通过本项目，练习了 Java 面向对象、集合、MySQL 基础 SQL、JDBC 数据库连接、PreparedStatement 防 SQL 注入、ResultSet 结果集处理，以及简单的 DAO + Service 分层思想，以及控制台输入校验。
 
 ## 后续优化方向
 
