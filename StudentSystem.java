@@ -2,10 +2,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import javax.print.DocFlavor.STRING;
+
 public class StudentSystem {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
         Scanner sc = new Scanner(System.in,"GBK");
-        ArrayList<Student> list = StudentDao.queryAllStudents();
+        ArrayList<Student> list;
+        try {
+            list = StudentDao.queryAllStudents();
+        } catch (SQLException e) {
+            System.out.println("数据库连接失败，请检查MySQL是否启动、账号密码是否正确。");
+            return;
+        }
 
         while (true) {
             System.out.println("*************************");
@@ -22,16 +30,28 @@ public class StudentSystem {
 
             switch (choose) {
                 case "1":
-                    addStudent(list);
+                    try {
+                        addStudent(list);
+                    } catch (SQLException e) {
+                        System.out.println("添加学生失败，请检查数据库连接。");
+                    }
                     break;
                 case "2":
-                    deleteStudent(list);
+                    try {
+                        deleteStudent(list);
+                    } catch (SQLException e) {
+                        System.out.println("删除学生失败，请检查数据库连接。");
+                    }
                     break;
                 case "3":
-                    updateStudent(list);
+                    try {
+                        updateStudent(list);
+                    } catch (SQLException e) {
+                        System.out.println("修改学生失败，请检查数据库连接。");
+                    }
                     break;
                 case "4":
-                    queryStudent(list);
+                        queryStudent(list);
                     break;
                 case "5":
                     System.out.println("感谢使用学生管理系统！");
@@ -45,21 +65,15 @@ public class StudentSystem {
 
     public static void addStudent(ArrayList<Student> list) throws SQLException{
         Scanner sc = new Scanner(System.in,"GBK");
-        String id;
-        while(true){
-            System.out.println("请输入学生学号");
-            id = sc.next();
-            int index = StudentService.getIndex(list, id);
-            if (!StudentService.isIdExists(list, id)){
-                break;
-            }
-            System.out.println("该学号已存在，请重新输入！");
-        }
-        System.out.print("请输入学生姓名：");
-        String name = sc.next();
+        String id = inputAddId(sc, list);
+
+        //输入姓名
+        String name = inputName(sc);
+
         System.out.print("请输入学生年龄：");
         int age = inputAge(sc);
-        System.out.print("请输入学生家庭住址：");
+
+        //输入地址
         String address = sc.next();
 
         Student s = new Student(id, name, age, address);
@@ -86,9 +100,8 @@ public class StudentSystem {
     }
 
     public static void deleteStudent(ArrayList<Student> list) throws SQLException{
-        Scanner sc = new Scanner(System.in,"GBK");
-        System.out.print("请输入要删除的学生学号：");
-        String id = sc.next();
+        Scanner sc = new Scanner(System.in);
+        String id = inputExistingId(sc, list, "请输入要删除的学生学号：");
         int index = StudentService.getIndex(list, id);
         if (index == -1){
             System.out.println("学号不存在，请重新输入！");
@@ -105,8 +118,7 @@ public class StudentSystem {
 
     public static void updateStudent(ArrayList<Student> list) throws SQLException{
         Scanner sc = new Scanner(System.in,"GBK");
-        System.out.print("请输入要修改的学生学号：");
-        String id = sc.next();
+        String id = inputExistingId(sc, list, "请输入要修改的学生学号：");
         int index = StudentService.getIndex(list, id);
         if(index == -1){
             System.out.printf("学号为%s的学生不存在，请重新输入！%n", id);
@@ -114,14 +126,12 @@ public class StudentSystem {
         }
             Student s = list.get(index);
 
-            System.out.println("请输入新的学生姓名：");
-            String name = sc.next();
+            String name = inputName(sc);
 
             System.out.println("请输入新的学生年龄：");
             int age = inputAge(sc);
 
-            System.out.println("请输入新的学生家庭住址：");
-            String address = sc.next();
+            String address = inputAddress(sc);
 
             boolean success = StudentService.updateStudent(s, name, age, address);
             
@@ -146,6 +156,72 @@ public class StudentSystem {
                 sc.next();
                 System.out.print("年龄必须是整数，请重新输入：");
             }
+        }
+    }
+
+    public static String inputAddId(Scanner sc, ArrayList<Student> list) {
+        while (true) {
+            System.out.println("请输入学号");
+            String id = sc.next();
+
+            if (!id.matches("\\d{1,20}")) {
+                System.out.println("学号只能是1到20位数字，请重新输入！");
+                continue;
+            }
+
+            if (StudentService.isIdExists(list, id)) {
+                System.out.println("该学号已存在，请重新输入！");
+                continue;
+            }
+
+            return id;
+        }
+    }
+
+    public static String inputName(Scanner sc) {
+        while (true) {
+            System.out.println("请输入学生姓名：");
+            String name = sc.next();
+
+            if (name.length() > 20) {
+                System.out.println("姓名不能超过20个字符，请重新输入！");
+                continue;
+            }
+
+            return name; 
+        }
+    }
+
+    public static String inputAddress(Scanner sc) {
+        while (true) {
+            System.out.println("请输入学生家庭住址：");
+            String address = sc.next();
+
+            if (address.length() > 50) {
+                System.out.println("地址不能超过50个字符，请重新输入！");
+                continue;
+            }
+
+            return address;
+        }
+    }
+
+    public static String inputExistingId(Scanner sc, ArrayList<Student> list, String message) {
+        while (true) {
+            System.out.println(message);
+            String id = sc.next();
+
+            if (!id.matches("\\d{1,20}")) {
+                System.out.println("学号只能是1到20位数字，请重新输入！");
+                continue;
+            }
+
+            if (!StudentService.isIdExists(list, id)) {
+                System.out.println("学号不存在，请重新输入！");
+                continue;
+            }
+
+            return id;
         }
     }
 }

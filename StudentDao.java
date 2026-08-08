@@ -1,17 +1,28 @@
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Properties;
 
 public class StudentDao {
-    private static final String URL = "jdbc:mysql://localhost:3306/student_system?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8";
-    private static final String USERNAME = "root";
-    private static final String PASSWORD = "your_password";
-
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        Properties prop = new Properties();
+
+        try (FileInputStream fis = new FileInputStream("db.properties")) {
+            prop.load(fis);
+        } catch (IOException e) {
+            throw new SQLException("读取数据库配置文件失败", e);
+        }
+
+        String url = prop.getProperty("db.url");
+        String username = prop.getProperty("db.username");
+        String password = prop.getProperty("db.password");
+
+        return DriverManager.getConnection(url, username, password);
     }
 
     public static ArrayList<Student> queryAllStudents() throws SQLException {
