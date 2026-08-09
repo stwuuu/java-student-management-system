@@ -2,7 +2,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import javax.print.DocFlavor.STRING;
 
 public class StudentSystem {
     public static void main(String[] args) {
@@ -31,21 +30,21 @@ public class StudentSystem {
             switch (choose) {
                 case "1":
                     try {
-                        addStudent(list);
+                        addStudent(sc, list);
                     } catch (SQLException e) {
                         System.out.println("添加学生失败，请检查数据库连接。");
                     }
                     break;
                 case "2":
                     try {
-                        deleteStudent(list);
+                        deleteStudent(sc, list);
                     } catch (SQLException e) {
                         System.out.println("删除学生失败，请检查数据库连接。");
                     }
                     break;
                 case "3":
                     try {
-                        updateStudent(list);
+                        updateStudent(sc, list);
                     } catch (SQLException e) {
                         System.out.println("修改学生失败，请检查数据库连接。");
                     }
@@ -63,8 +62,8 @@ public class StudentSystem {
             }
         }
 
-    public static void addStudent(ArrayList<Student> list) throws SQLException{
-        Scanner sc = new Scanner(System.in,"GBK");
+    public static void addStudent(Scanner sc, ArrayList<Student> list) throws SQLException{
+        
         String id = inputAddId(sc, list);
 
         //输入姓名
@@ -74,7 +73,7 @@ public class StudentSystem {
         int age = inputAge(sc);
 
         //输入地址
-        String address = sc.next();
+        String address = inputAddress(sc);
 
         Student s = new Student(id, name, age, address);
         boolean success = StudentService.addStudent(list, s);
@@ -99,31 +98,24 @@ public class StudentSystem {
         }
     }
 
-    public static void deleteStudent(ArrayList<Student> list) throws SQLException{
-        Scanner sc = new Scanner(System.in);
+    public static void deleteStudent(Scanner sc, ArrayList<Student> list) throws SQLException{
         String id = inputExistingId(sc, list, "请输入要删除的学生学号：");
-        int index = StudentService.getIndex(list, id);
-        if (index == -1){
-            System.out.println("学号不存在，请重新输入！");
-        } else {
-            boolean success = StudentService.deleteStudent(list, id);
+        
+
+        boolean success = StudentService.deleteStudent(list, id);
             
-            if (success) {
+        if (success) {
                 System.out.println("学生信息删除成功！");
-            } else {
+        } else {
                 System.out.println("学生信息删除失败！");
-            }
         }
     }
 
-    public static void updateStudent(ArrayList<Student> list) throws SQLException{
-        Scanner sc = new Scanner(System.in,"GBK");
+
+    public static void updateStudent(Scanner sc, ArrayList<Student> list) throws SQLException{
         String id = inputExistingId(sc, list, "请输入要修改的学生学号：");
         int index = StudentService.getIndex(list, id);
-        if(index == -1){
-            System.out.printf("学号为%s的学生不存在，请重新输入！%n", id);
-            return;
-        }
+        
             Student s = list.get(index);
 
             String name = inputName(sc);
