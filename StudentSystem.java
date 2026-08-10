@@ -20,8 +20,10 @@ public class StudentSystem {
             System.out.println("1. 添加学生");
             System.out.println("2. 删除学生");
             System.out.println("3. 修改学生");
-            System.out.println("4. 查询学生");
-            System.out.println("5. 退出系统");
+            System.out.println("4. 查询所有学生");
+            System.out.println("5. 按学号查询学生");
+            System.out.println("6. 按姓名查询学生");
+            System.out.println("7. 退出系统");
             System.out.println("*************************");
             System.out.print("请输入操作编号：");
 
@@ -53,6 +55,12 @@ public class StudentSystem {
                         queryStudent(list);
                     break;
                 case "5":
+                    queryStudentById(sc, list);
+                    break;
+                case "6":
+                    queryStudentsByName(sc, list);
+                    break;
+                case "7":
                     System.out.println("感谢使用学生管理系统！");
                     System.exit(0);
                     break;
@@ -132,6 +140,33 @@ public class StudentSystem {
             } else {
                 System.out.println("学生信息修改失败！");
             }
+    }
+
+    public static void queryStudentById(Scanner sc, ArrayList<Student> list) {
+        String id = inputExistingId(sc, list, "请输入要查询的学号：");
+
+        int index = StudentService.getIndex(list, id);
+        Student s = list.get(index);
+        System.out.printf("%-12s%-8s%-6s%-10s%n","学号","姓名", "年龄","地址");
+        System.out.printf("%-12s%-8s%-6d%-10s%n", s.getId(), s.getName(), s.getAge(), s.getAddress());
+    }
+
+    public static void queryStudentsByName(Scanner sc, ArrayList<Student> list) {
+        System.out.print("请输入要查询的姓名关键字：");
+        String keyword = sc.next();
+
+        ArrayList<Student> result = StudentService.searchStudentsByName(list, keyword);
+
+        if (result.size() == 0) {
+            System.out.println("没有找到匹配的学生信息。");
+            return;
+        }
+        System.out.printf("%-12s%-8s%-6s%-10s%n", "学号", "姓名", "年龄", "地址");
+
+        for (int i = 0; i < result.size(); i++) {
+            Student s = result.get(i);
+            System.out.printf("%-12s%-8s%-6d%-10s%n", s.getId(), s.getName(), s.getAge(), s.getAddress());
+        }
     }
 
     public static int inputAge(Scanner sc){

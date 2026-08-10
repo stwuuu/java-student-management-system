@@ -56,4 +56,17 @@ public class StudentService {
         
     }
 
+    public static ArrayList<Student> searchStudentsByName(ArrayList<Student> list, String keyword) {
+        ArrayList<Student> result = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            Student s = list.get(i);
+
+            if (s.getName().contains(keyword)) {
+                result.add(s);
+            }
+        }
+
+        return result;
+    }
+
 }
